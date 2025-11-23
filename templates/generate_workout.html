@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Your AI Workout Plan</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-r from-teal-400 to-blue-500 min-h-screen flex items-center justify-center p-6">
+
+  <div class="max-w-3xl w-full bg-white rounded-2xl shadow-lg p-8 animate-fadeIn">
+    <h1 class="text-3xl font-bold text-center text-teal-600 mb-6">Your Personalized Workout Plan</h1>
+    
+    <div class="prose max-w-none text-gray-800 leading-relaxed whitespace-pre-line">
+      {{ plan | safe }}
+    </div>
+
+    <div class="mt-8 flex justify-center">
+      <a href="/" class="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-lg shadow-md transition">
+        Generate Another Plan
+      </a>
+    </div>
+  </div>
+
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.8s ease-in-out;
+    }
+  </style>
+
+</body>
+</html>

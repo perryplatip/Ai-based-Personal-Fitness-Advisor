@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitAI - Nutrition Guide</title>
+    <style>
+      @import url(https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap);
+      @import url(https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&display=swap);
+      @import url(https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined);
+
+      /* Custom animations */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes slideInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes slideInRight {
+        from {
+          opacity: 0;
+          transform: translateX(50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes progressFill {
+        from {
+          width: 0%;
+        }
+        to {
+          width: var(--progress-width);
+        }
+      }
+
+      @keyframes circleProgress {
+        from {
+          stroke-dashoffset: 283;
+        }
+        to {
+          stroke-dashoffset: var(--circle-offset);
+        }
+      }
+
+      .animate-fadeInUp {
+        animation: fadeInUp 0.6s ease-out;
+      }
+
+      .animate-slideInLeft {
+        animation: slideInLeft 0.8s ease-out;
+      }
+
+      .animate-slideInRight {
+        animation: slideInRight 0.8s ease-out;
+      }
+
+      .progress-bar {
+        animation: progressFill 2s ease-out forwards;
+        animation-delay: 0.5s;
+      }
+
+      .circle-progress {
+        animation: circleProgress 2s ease-out forwards;
+        animation-delay: 0.5s;
+      }
+
+      /* Carousel styles */
+      .carousel-container {
+        overflow: hidden;
+      }
+
+      .carousel-track {
+        display: flex;
+        transition: transform 0.5s ease;
+      }
+
+      .carousel-item {
+        flex: 0 0 300px;
+        margin-right: 16px;
+      }
+
+      /* Floating label styles */
+      .floating-label {
+        position: relative;
+      }
+
+      .floating-label input:focus + label,
+      .floating-label input:not(:placeholder-shown) + label {
+        transform: translateY(-20px) scale(0.8);
+        color: #611bf8;
+      }
+
+      .floating-label label {
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        transition: all 0.3s ease;
+        pointer-events: none;
+        color: #999;
+      }
+
+      /* Success story carousel */
+      .story-carousel {
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+      }
+
+      .story-slide {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+      }
+
+      .story-slide.active {
+        opacity: 1;
+      }
+    </style>
+</head>
+<body>
+<div id="webcrumbs">
+  <div class="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100 relative">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=2070')] bg-cover bg-center opacity-10 fixed"></div>
+    
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-md border-b border-neutral-200 sticky top-0 z-50">
+      <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <span class="material-symbols-outlined text-primary-600 text-3xl">fitness_center</span>
+          <h1 class="text-2xl font-bold font-title bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent">FitAI</h1>
+        </div>
+        <nav class="hidden md:flex items-center space-x-6">
+          <a href="#" class="font-medium hover:text-primary-600 transition-colors">Home</a>
+          <a href="#" class="font-medium hover:text-primary-600 transition-colors">Workouts</a>
+          <a href="#" class="font-medium text-primary-600 border-b-2 border-primary-500">Nutrition</a>
+          <a href="#" class="font-medium hover:text-primary-600 transition-colors">Progress</a>
+          <a href="#" class="font-medium hover:text-primary-600 transition-colors">Community</a>
+        </nav>
+        <div class="flex items-center space-x-3">
+          <a href="#" class="hidden md:block py-2 px-4 rounded-full bg-white border border-primary-200 hover:bg-primary-50 text-primary-600 font-medium transition-all">Login</a>
+          <a href="#" class="py-2 px-4 rounded-full bg-primary-600 hover:bg-primary-700 text-white font-medium transition-all">Sign Up</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative py-20 md:py-28 overflow-hidden">
+      <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=2070')] bg-cover bg-center opacity-30"></div>
+      <div class="container mx-auto px-4 relative">
+        <div class="text-center animate-fadeInUp">
+          <h2 class="text-4xl md:text-6xl font-bold font-title leading-tight mb-6">
+            Your AI-Powered <span class="bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent">Nutrition Guide</span>
+          </h2>
+          <p class="text-xl text-neutral-600 mb-8 max-w-2xl mx-auto">
+            Personalized diet plans tailored to your health goals, dietary preferences, and lifestyle needs.
+          </p>
+          <a href="#user-form" class="inline-flex items-center py-4 px-8 rounded-full bg-primary-600 hover:bg-primary-700 text-white font-medium text-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:translate-y-[-3px]">
+            <span class="mr-2">Get Started</span>
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- User Input Form -->
+    <section id="user-form" class="py-16 bg-white/50 backdrop-blur-sm">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-12 animate-fadeInUp">
+          <h2 class="text-3xl font-bold font-title mb-4">Tell Us About Your Goals</h2>
+          <p class="text-neutral-600 max-w-2xl mx-auto">Help us create the perfect nutrition plan for you</p>
+        </div>
+        
+        <div class="max-w-4xl mx-auto bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-neutral-200 p-8 animate-slideInLeft">
+          <form class="grid md:grid-cols-2 gap-6"  method="POST" action="/generate_plan">
+            <div class="space-y-6">
+              <div>
+                <label class="block text-neutral-700 font-medium mb-3">Dietary Preference</label>
+                <div class="grid grid-cols-3 gap-3">
+                  <label class="flex items-center justify-center p-3 rounded-lg border-2 border-neutral-200 cursor-pointer hover:border-primary-300 transition-colors">
+                    <input type="radio" name="diet" value="vegetarian" class="sr-only">
+                    <span class="text-center">
+                      <div class="text-2xl mb-1">🥗</div>
+                      <div class="text-sm font-medium">Vegetarian</div>
+                    </span>
+                  </label>
+                  <label class="flex items-center justify-center p-3 rounded-lg border-2 border-neutral-200 cursor-pointer hover:border-primary-300 transition-colors">
+                    <input type="radio" name="diet" value="non-vegetarian" class="sr-only">
+                    <span class="text-center">
+                      <div class="text-2xl mb-1">🍖</div>
+                      <div class="text-sm font-medium">Non-Veg</div>
+                    </span>
+                  </label>
+                  <label class="flex items-center justify-center p-3 rounded-lg border-2 border-neutral-200 cursor-pointer hover:border-primary-300 transition-colors">
+                    <input type="radio" name="diet" value="vegan" class="sr-only">
+                    <span class="text-center">
+                      <div class="text-2xl mb-1">🌱</div>
+                      <div class="text-sm font-medium">Vegan</div>
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-neutral-700 font-medium mb-3">Health Goal</label>
+                <select name="goal" class="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all">
+                  <option>Weight Loss</option>
+                  <option>Weight Gain</option>
+                  <option>Muscle Gain</option>
+                  <option>Weight Maintenance</option>
+                  <option>General Health</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="space-y-6">
+              <div class="floating-label">
+                <input type="text" placeholder=" " name="allergies"class="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all">
+                <label>Food Allergies (if any)</label>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div class="floating-label">
+                  <input type="number" name="age" placeholder=" " class="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all">
+                  <label>Age</label>
+                </div>
+                <div class="floating-label">
+                  <input type="number"name="weight" placeholder=" " class="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all">
+                  <label>Weight (kg)</label>
+                </div>
+              </div>
+
+              <button type="submit" class="w-full py-3 px-6 rounded-lg bg-primary-600 hover:bg-primary-700 text-white font-medium transition-all duration-300 shadow-md hover:shadow-lg hover:translate-y-[-2px]">
+                Generate My Nutrition Plan
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Diet Recommendation Cards -->
+    <section class="py-16 bg-gradient-to-br from-primary-50 to-blue-50">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-12 animate-fadeInUp">
+          <h2 class="text-3xl font-bold font-title mb-4">Today's Meal Plan</h2>
+          <p class="text-neutral-600">Balanced nutrition throughout your day</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Breakfast -->
+          <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-neutral-200 hover:shadow-xl transition-all duration-300 hover:translate-y-[-5px] animate-slideInLeft">
+            <img src="data:image/jpeg;base64,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" alt="Healthy breakfast" class="w-full h-40 object-cover rounded-xl mb-4">
+            <h3 class="text-xl font-bold font-title mb-2">Breakfast</h3>
+            <p class="text-neutral-600 text-sm mb-4">Oatmeal with berries, nuts and honey</p>
+            <div class="flex justify-between items-center">
+              <div class="text-2xl font-bold text-primary-600">340</div>
+              <div class="text-sm text-neutral-500">calories</div>
+            </div>
+            <div class="flex justify-between mt-3 text-xs">
+              <span class="px-2 py-1 bg-green-100 text-green-700 rounded">45g carbs</span>
+              <span class="px-2 py-1 bg-orange-100 text-orange-700 rounded">12g protein</span>
+              <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded">8g fats</span>
+            </div>
+          </div>
+
+          <!-- Lunch -->
+          <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-neutral-200 hover:shadow-xl transition-all duration-300 hover:translate-y-[-5px] animate-slideInLeft" style="animation-delay: 0.2s">
+            <img src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?q=80&w=400" alt="Healthy lunch" class="w-full h-40 object-cover rounded-xl mb-4">
+            <h3 class="text-xl font-bold font-title mb-2">Lunch</h3>
+            <p class="text-neutral-600 text-sm mb-4">Grilled chicken salad with quinoa</p>
+            <div class="flex justify-between items-center">
+              <div class="text-2xl font-bold text-primary-600">520</div>
+              <div class="text-sm text-neutral-500">calories</div>
+            </div>
+            <div class="flex justify-between mt-3 text-xs">
+              <span class="px-2 py-1 bg-green-100 text-green-700 rounded">35g carbs</span>
+              <span class="px-2 py-1 bg-orange-100 text-orange-700 rounded">45g protein</span>
+              <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded">18g fats</span>
+            </div>
+          </div>
+
+          <!-- Dinner -->
+          <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-neutral-200 hover:shadow-xl transition-all duration-300 hover:translate-y-[-5px] animate-slideInLeft" style="animation-delay: 0.4s">
+            <img src="data:image/jpeg;base64,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" alt="Healthy dinner" class="w-full h-40 object-cover rounded-xl mb-4">
+            <h3 class="text-xl font-bold font-title mb-2">Dinner</h3>
+            <p class="text-neutral-600 text-sm mb-4">Baked salmon with roasted vegetables</p>
+            <div class="flex justify-between items-center">
+              <div class="text-2xl font-bold text-primary-600">480</div>
+              <div class="text-sm text-neutral-500">calories</div>
+            </div>
+            <div class="flex justify-between mt-3 text-xs">
+              <span class="px-2 py-1 bg-green-100 text-green-700 rounded">25g carbs</span>
+              <span class="px-2 py-1 bg-orange-100 text-orange-700 rounded">40g protein</span>
+              <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded">22g fats</span>
+            </div>
+          </div>
+
+          <!-- Snacks -->
+          <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-neutral-200 hover:shadow-xl transition-all duration-300 hover:translate-y-[-5px] animate-slideInLeft" style="animation-delay: 0.6s">
+            <img src="https://images.unsplash.com/photo-1559181567-c3190ca9959b?q=80&w=400" alt="Healthy snacks" class="w-full h-40 object-cover rounded-xl mb-4">
+            <h3 class="text-xl font-bold font-title mb-2">Snacks</h3>
+            <p class="text-neutral-600 text-sm mb-4">Mixed nuts and fresh fruit</p>
+            <div class="flex justify-between items-center">
+              <div class="text-2xl font-bold text-primary-600">260</div>
+              <div class="text-sm text-neutral-500">calories</div>
+            </div>
+            <div class="flex justify-between mt-3 text-xs">
+              <span class="px-2 py-1 bg-green-100 text-green-700 rounded">20g carbs</span>
+              <span class="px-2 py-1 bg-orange-100 text-orange-700 rounded">8g protein</span>
+              <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded">18g fats</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Alternative Food Carousel -->
+    <section class="py-16 bg-white/70 backdrop-blur-sm">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-12 animate-fadeInUp">
+          <h2 class="text-3xl font-bold font-title mb-4">Healthy Food Swaps</h2>
+          <p class="text-neutral-600">Make better choices with these simple alternatives</p>
+        </div>
+
+        <div class="relative">
+          <div class="carousel-container">
+            <div class="carousel-track" id="swapCarousel">
+              <!-- Swap 1 -->
+              <div class="carousel-item">
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-neutral-200 hover:shadow-xl transition-all duration-300">
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="text-center flex-1">
+                      <img src="https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?q=80&w=200" alt="White rice" class="w-16 h-16 object-cover rounded-full mx-auto mb-2">
+                      <p class="text-sm font-medium text-red-600">White Rice</p>
+                      <p class="text-xs text-neutral-500">High GI, less fiber</p>
+                    </div>
+                    <div class="px-4">
+                      <span class="material-symbols-outlined text-primary-600 text-2xl">arrow_forward</span>
+                    </div>
+                    <div class="text-center flex-1">
+                      <img src="https://images.unsplash.com/photo-1585747519893-70ab21b89d7e?q=80&w=200" alt="Brown rice" class="w-16 h-16 object-cover rounded-full mx-auto mb-2">
+                      <p class="text-sm font-medium text-green-600">Brown Rice</p>
+                      <p class="text-xs text-neutral-500">Rich in fiber & nutrients</p>
+                    </div>
+                  </div>
+                  <div class="text-center">
+                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">Better Choice</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Swap 2 -->
+              <div class="carousel-item">
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-neutral-200 hover:shadow-xl transition-all duration-300">
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="text-center flex-1">
+                      <img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=200" alt="Soda" class="w-16 h-16 object-cover rounded-full mx-auto mb-2">
+                      <p class="text-sm font-medium text-red-600">Soda</p>
+                      <p class="text-xs text-neutral-500">High sugar, empty calories</p>
+                    </div>
+                    <div class="px-4">
+                      <span class="material-symbols-outlined text-primary-600 text-2xl">arrow_forward</span>
+                    </div>
+                    <div class="text-center flex-1">
+                      <img src="https://images.unsplash.com/photo-1600271886742-f049cd451bba?q=80&w=200" alt="Fresh juice" class="w-16 h-16 object-cover rounded-full mx-auto mb-2">
+                      <p class="text-sm font-medium text-green-600">Fresh Juice</p>
+                      <p class="text-xs text-neutral-500">Natural vitamins & minerals</p>
+                    </div>
+                  </div>
+                  <div class="text-center">
+                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">Healthier Option</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Swap 3 -->
+              <div class="carousel-item">
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-neutral-200 hover:shadow-xl transition-all duration-300">
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="text-center flex-1">
+                      <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?q=80&w=200" alt="Chips" class="w-16 h-16 object-cover rounded-full mx-auto mb-2">
+                      <p class="text-sm font-medium text-red-600">Potato Chips</p>
+                      <p class="text-xs text-neutral-500">High sodium & trans fats</p>
+                    </div>
+                    <div class="px-4">
+                      <span class="material-symbols-outlined text-primary-600 text-2xl">arrow_forward</span>
+                    </div>
+                    <div class="text-center flex-1">
+                      <img src="https://images.unsplash.com/photo-1559181567-c3190ca9959b?q=80&w=200" alt="Nuts" class="w-16 h-16 object-cover rounded-full mx-auto mb-2">
+                      <p class="text-sm font-medium text-green-600">Mixed Nuts</p>
+                      <p class="text-xs text-neutral-500">Healthy fats & protein</p>
+                    </div>
+                  </div>
+                  <div class="text-center">
+                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">Smart Swap</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Navigation arrows -->
+          <button onclick="slideCarousel('prev')" class="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg hover:shadow-xl transition-all">
+            <span class="material-symbols-outlined text-primary-600">chevron_left</span>
+          </button>
+          <button onclick="slideCarousel('next')" class="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg hover:shadow-xl transition-all">
+            <span class="material-symbols-outlined text-primary-600">chevron_right</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recipe Section -->
+    <section class="py-16 bg-gradient-to-br from-neutral-50 to-primary-50">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-12 animate-fadeInUp">
+          <h2 class="text-3xl font-bold font-title mb-4">Healthy Recipes</h2>
+          <p class="text-neutral-600">Delicious and nutritious recipes to try</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Recipe 1 -->
+          <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-neutral-200 overflow-hidden hover:shadow-xl transition-all duration-300 hover:translate-y-[-5px] animate-slideInLeft">
+            <img src="https://images.unsplash.com/photo-1546793665-c74683f339c1?q=80&w=400" alt="Quinoa bowl" class="w-full h-48 object-cover">
+            <div class="p-6">
+              <h3 class="text-xl font-bold font-title mb-2">Rainbow Quinoa Bowl</h3>
+              <p class="text-neutral-600 text-sm mb-4">Colorful and nutrient-packed bowl with quinoa, vegetables, and tahini dressing</p>
+              <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center space-x-4">
+                  <span class="text-sm"><strong>450</strong> cal</span>
+                  <span class="text-sm"><strong>15g</strong> protein</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                  <span class="text-sm"><strong>12g</strong> fat</span>
+                  <span class="text-sm"><strong>65g</strong> carbs</span>
+                </div>
+              </div>
+              <a href="https://youtu.be/uK4LibynqSk?si=5H3jXwnKIWROLmRD" class="text-primary-600 font-medium flex items-center hover:text-primary-700 transition-colors">
+                <span>View Recipe</span>
+                <span class="material-symbols-outlined ml-1 text-sm">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Recipe 2 -->
+          <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-neutral-200 overflow-hidden hover:shadow-xl transition-all duration-300 hover:translate-y-[-5px] animate-slideInLeft" style="animation-delay: 0.2s">
+            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=400" alt="Salmon" class="w-full h-48 object-cover">
+            <div class="p-6">
+              <h3 class="text-xl font-bold font-title mb-2">Herb-Crusted Salmon</h3>
+              <p class="text-neutral-600 text-sm mb-4">Omega-3 rich salmon with fresh herbs and lemon, served with roasted vegetables</p>
+              <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center space-x-4">
+                  <span class="text-sm"><strong>380</strong> cal</span>
+                  <span class="text-sm"><strong>35g</strong> protein</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                  <span class="text-sm"><strong>22g</strong> fat</span>
+                  <span class="text-sm"><strong>8g</strong> carbs</span>
+                </div>
+              </div>
+              <a href="https://youtu.be/wdk7CoD5H10?si=OepMKSxaCTmpXSWB" class="text-primary-600 font-medium flex items-center hover:text-primary-700 transition-colors">
+                <span>View Recipe</span>
+                <span class="material-symbols-outlined ml-1 text-sm">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Recipe 3 -->
+          <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-neutral-200 overflow-hidden hover:shadow-xl transition-all duration-300 hover:translate-y-[-5px] animate-slideInLeft" style="animation-delay: 0.4s">
+            <img src="https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?q=80&w=400" alt="Smoothie bowl" class="w-full h-48 object-cover">
+            <div class="p-6">
+              <h3 class="text-xl font-bold font-title mb-2">Acai Power Bowl</h3>
+              <p class="text-neutral-600 text-sm mb-4">Antioxidant-rich acai bowl topped with fresh berries, granola, and coconut flakes</p>
+              <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center space-x-4">
+                  <span class="text-sm"><strong>320</strong> cal</span>
+                  <span class="text-sm"><strong>8g</strong> protein</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                  <span class="text-sm"><strong>6g</strong> fat</span>
+                  <span class="text-sm"><strong>68g</strong> carbs</span>
+                </div>
+              </div>
+              <a href="https://youtube.com/shorts/z00LesAVF0A?si=iVY37BAEnoUNLzhA" class="text-primary-600 font-medium flex items-center hover:text-primary-700 transition-colors">
+                <span>View Recipe</span>
+                <span class="material-symbols-outlined ml-1 text-sm">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Progress Tracker -->
+    <section class="py-16 bg-white/70 backdrop-blur-sm">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-12 animate-fadeInUp">
+          <h2 class="text-3xl font-bold font-title mb-4">Today's Progress</h2>
+          <p class="text-neutral-600">Track your daily nutrition goals</p>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+          <div class="grid md:grid-cols-2 gap-8">
+            <!-- Calories Progress -->
+            <div class="bg-white/80 backdrop-blur-md rounded-2xl p-8 shadow-lg border border-neutral-200 hover:shadow-xl transition-all duration-300 animate-slideInLeft">
+              <div class="text-center mb-6">
+                <h3 class="text-2xl font-bold font-title mb-2">Calories</h3>
+                <div class="text-4xl font-bold text-primary-600 mb-2">1,600 <span class="text-lg text-neutral-500">/ 2,000</span></div>
+                <p class="text-neutral-600">400 calories remaining</p>
+              </div>
+              
+              <div class="relative h-6 bg-neutral-200 rounded-full overflow-hidden mb-6">
+                <div class="progress-bar absolute top-0 left-0 h-full bg-gradient-to-r from-primary-500 to-primary-600 rounded-full" style="--progress-width: 80%; width: 0;"></div>
+              </div>
+
+              <div class="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <div class="text-lg font-bold text-green-600">340</div>
+                  <div class="text-xs text-neutral-500">Breakfast</div>
+                </div>
+                <div>
+                  <div class="text-lg font-bold text-orange-600">520</div>
+                  <div class="text-xs text-neutral-500">Lunch</div>
+                </div>
+                <div>
+                  <div class="text-lg font-bold text-blue-600">480</div>
+                  <div class="text-xs text-neutral-500">Dinner</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Macros Breakdown -->
+            <div class="bg-white/80 backdrop-blur-md rounded-2xl p-8 shadow-lg border border-neutral-200 hover:shadow-xl transition-all duration-300 animate-slideInRight">
+              <h3 class="text-2xl font-bold font-title text-center mb-6">Macros Breakdown</h3>
+              
+              <div class="relative flex justify-center mb-6">
+                <div class="relative w-40 h-40">
+                  <svg class="w-40 h-40 transform -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#e6e6e6" stroke-width="8"></circle>
+                    <!-- Carbs: 45% -->
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#10B981" stroke-width="8" stroke-dasharray="283" stroke-dashoffset="155" class="circle-progress" style="--circle-offset: 155;"></circle>
+                    <!-- Protein: 30% -->
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#F59E0B" stroke-width="8" stroke-dasharray="283" stroke-dashoffset="70" class="circle-progress" style="--circle-offset: 70; animation-delay: 0.7s;"></circle>
+                    <!-- Fats: 25% -->
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#3B82F6" stroke-width="8" stroke-dasharray="283" stroke-dashoffset="0" class="circle-progress" style="--circle-offset: 0; animation-delay: 1s;"></circle>
+                  </svg>
+                  <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+                    <div class="text-center">
+                      <div class="text-2xl font-bold">100%</div>
+                      <div class="text-xs text-neutral-500">Complete</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center">
+                    <div class="w-4 h-4 bg-green-500 rounded-full mr-3"></div>
+                    <span class="font-medium">Carbs</span>
+                  </div>
+                  <div class="text-right">
+                    <div class="font-bold">180g</div>
+                    <div class="text-xs text-neutral-500">45%</div>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center">
+                    <div class="w-4 h-4 bg-yellow-500 rounded-full mr-3"></div>
+                    <span class="font-medium">Protein</span>
+                  </div>
+                  <div class="text-right">
+                    <div class="font-bold">120g</div>
+                    <div class="text-xs text-neutral-500">30%</div>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center">
+                    <div class="w-4 h-4 bg-blue-500 rounded-full mr-3"></div>
+                    <span class="font-medium">Fats</span>
+                  </div>
+                  <div class="text-right">
+                    <div class="font-bold">44g</div>
+                    <div class="text-xs text-neutral-500">25%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Motivation Section -->
+    <section class="py-16 bg-gradient-to-br from-primary-50 to-blue-50">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-12 animate-fadeInUp">
+          <h2 class="text-3xl font-bold font-title mb-4">Success Stories & Motivation</h2>
+          <p class="text-neutral-600">Get inspired by others on their nutrition journey</p>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+          <div class="bg-white/80 backdrop-blur-md rounded-2xl p-8 shadow-lg border border-neutral-200">
+            <div class="story-carousel">
+              <!-- Story 1 -->
+              <div class="story-slide active">
+                <div class="text-center">
+                  <img src="https://images.unsplash.com/photo-1494790108755-2616c78c7976?q=80&w=150" alt="Success story" class="w-20 h-20 rounded-full mx-auto mb-4 object-cover">
+                  <blockquote class="text-lg italic text-neutral-700 mb-4">"FitAI's nutrition plan helped me lose 30 pounds in 6 months. The personalized meal recommendations made healthy eating so much easier!"</blockquote>
+                  <div class="font-bold text-primary-600">Sarah Johnson</div>
+                  <div class="text-sm text-neutral-500">Lost 30 lbs in 6 months</div>
+                </div>
+              </div>
+
+              <!-- Story 2 -->
+              <div class="story-slide">
+                <div class="text-center">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150" alt="Success story" class="w-20 h-20 rounded-full mx-auto mb-4 object-cover">
+                  <blockquote class="text-lg italic text-neutral-700 mb-4">"As a busy professional, FitAI's meal planning saved me hours every week. I'm eating healthier than ever before!"</blockquote>
+                  <div class="font-bold text-primary-600">Michael Chen</div>
+                  <div class="text-sm text-neutral-500">Improved energy & focus</div>
+                </div>
+              </div>
+
+              <!-- Story 3 -->
+              <div class="story-slide">
+                <div class="text-center">
+                  <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=150" alt="Success story" class="w-20 h-20 rounded-full mx-auto mb-4 object-cover">
+                  <blockquote class="text-lg italic text-neutral-700 mb-4">"The AI recommendations adapted perfectly to my dietary restrictions. Finally, a nutrition plan that works for my lifestyle!"</blockquote>
+                  <div class="font-bold text-primary-600">Emma Rodriguez</div>
+                  <div class="text-sm text-neutral-500">Better health with allergies</div>
+                </div>
+              </div>
+
+              <!-- Quote slide -->
+              <div class="story-slide">
+                <div class="text-center">
+                  <div class="text-6xl text-primary-600 mb-4">"</div>
+                  <blockquote class="text-2xl font-bold text-primary-700 mb-4">Healthy eating is not about strict limitations, it's about feeling great and having more energy.</blockquote>
+                  <div class="text-neutral-600">- FitAI Nutrition Philosophy</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Navigation dots -->
+            <div class="flex justify-center space-x-2 mt-8">
+              <button onclick="goToStory(0)" class="story-dot w-3 h-3 rounded-full bg-primary-600 transition-all"></button>
+              <button onclick="goToStory(1)" class="story-dot w-3 h-3 rounded-full bg-neutral-300 transition-all"></button>
+              <button onclick="goToStory(2)" class="story-dot w-3 h-3 rounded-full bg-neutral-300 transition-all"></button>
+              <button onclick="goToStory(3)" class="story-dot w-3 h-3 rounded-full bg-neutral-300 transition-all"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer CTA -->
+    <section class="py-16 bg-gradient-to-r from-primary-600 to-primary-700 text-white">
+      <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold font-title mb-4">Ready to Transform Your Nutrition?</h2>
+        <p class="text-xl mb-8 text-primary-100">Start your personalized nutrition journey today</p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="#" class="py-4 px-8 rounded-full bg-white text-primary-600 hover:bg-neutral-100 font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:translate-y-[-3px]">
+            Get Your Meal Plan
+          </a>
+          <a href="#" class="py-4 px-8 rounded-full border-2 border-white text-white hover:bg-white hover:text-primary-600 font-medium transition-all duration-300">
+            Learn More
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    content: ["./src/**/*.{html,js}"],
+    theme: {
+      "name": "Bluewave",
+      "fontFamily": {
+        "sans": ["Open Sans", "ui-sans-serif", "system-ui", "sans-serif"],
+        "title": ["Lato", "ui-sans-serif", "system-ui", "sans-serif"]
+      },
+      "extend": {
+        "colors": {
+          "neutral": {
+            "50": "#f7f7f7",
+            "100": "#eeeeee",
+            "200": "#e0e0e0",
+            "300": "#cacaca",
+            "400": "#b1b1b1",
+            "500": "#999999",
+            "600": "#7f7f7f",
+            "700": "#676767",
+            "800": "#545454",
+            "900": "#464646",
+            "950": "#282828"
+          },
+          "primary": {
+            "50": "#f3f1ff",
+            "100": "#e9e5ff",
+            "200": "#d5cfff",
+            "300": "#b7a9ff",
+            "400": "#9478ff",
+            "500": "#7341ff",
+            "600": "#631bff",
+            "700": "#611bf8",
+            "800": "#4607d0",
+            "900": "#3c08aa",
+            "950": "#220174",
+            "DEFAULT": "#611bf8"
+          }
+        }
+      }
+    },
+    plugins: [],
+    important: '#webcrumbs'
+  };
+
+  // Carousel functionality
+  let currentSlide = 0;
+  const totalSlides = 3;
+
+  function slideCarousel(direction) {
+    const carousel = document.getElementById('swapCarousel');
+    const slideWidth = 316; // 300px + 16px margin
+    
+    if (direction === 'next') {
+      currentSlide = currentSlide >= totalSlides - 1 ? 0 : currentSlide + 1;
+    } else {
+      currentSlide = currentSlide <= 0 ? totalSlides - 1 : currentSlide - 1;
+    }
+    
+    carousel.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+  }
+
+  // Success stories carousel
+  let currentStory = 0;
+  const totalStories = 4;
+
+  function goToStory(index) {
+    const slides = document.querySelectorAll('.story-slide');
+    const dots = document.querySelectorAll('.story-dot');
+    
+    slides[currentStory].classList.remove('active');
+    dots[currentStory].classList.remove('bg-primary-600');
+    dots[currentStory].classList.add('bg-neutral-300');
+    
+    currentStory = index;
+    
+    slides[currentStory].classList.add('active');
+    dots[currentStory].classList.remove('bg-neutral-300');
+    dots[currentStory].classList.add('bg-primary-600');
+  }
+
+  // Auto-play success stories
+  setInterval(() => {
+    const nextStory = (currentStory + 1) % totalStories;
+    goToStory(nextStory);
+  }, 5000);
+
+  // Diet preference selection
+  document.querySelectorAll('input[name="diet"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      // Remove selected class from all labels
+      document.querySelectorAll('input[name="diet"]').forEach(r => {
+        r.closest('label').classList.remove('border-primary-500', 'bg-primary-50');
+        r.closest('label').classList.add('border-neutral-200');
+      });
+      
+      // Add selected class to chosen label
+      this.closest('label').classList.remove('border-neutral-200');
+      this.closest('label').classList.add('border-primary-500', 'bg-primary-50');
+    });
+  });
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  });
+
+  // Auto-slide carousel
+  setInterval(() => {
+    slideCarousel('next');
+  }, 4000);
+</script>
+
+</body>
+</html>

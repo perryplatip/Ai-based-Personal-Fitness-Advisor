@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yoga Exercise Timer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Lato:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f7f7f7 0%, #e8e3ff 50%, #e3f0ff 100%);
+            color: #4a4a4a;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            box-shadow: 0 15px 40px rgba(97, 27, 248, 0.15);
+        }
+
+        .header h1 {
+            font-family: 'Lato', sans-serif;
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #611bf8 0%, #7341ff 50%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-weight: 900;
+        }
+
+        .input-section {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(97, 27, 248, 0.15);
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #611bf8;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid rgba(97, 27, 248, 0.2);
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: 'Open Sans', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #611bf8;
+            box-shadow: 0 0 0 3px rgba(97, 27, 248, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #611bf8 0%, #7341ff 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(97, 27, 248, 0.3);
+        }
+
+        .btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(97, 27, 248, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .timer-display {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(97, 27, 248, 0.15);
+            margin-bottom: 30px;
+            text-align: center;
+            display: none;
+        }
+
+        .timer-display.active {
+            display: block;
+        }
+
+        .current-exercise {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #611bf8;
+            margin-bottom: 20px;
+        }
+
+        .timer {
+            font-family: 'Lato', sans-serif;
+            font-size: 5em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #611bf8 0%, #7341ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .timer-controls button {
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-pause {
+            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-stop {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-pause:hover, .btn-stop:hover {
+            transform: scale(1.05);
+        }
+
+        .history-section {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(97, 27, 248, 0.15);
+        }
+
+        .history-section h2 {
+            font-family: 'Lato', sans-serif;
+            font-size: 1.8em;
+            color: #611bf8;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .history-item {
+            background: linear-gradient(135deg, rgba(97, 27, 248, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #611bf8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .history-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(97, 27, 248, 0.15);
+        }
+
+        .history-info {
+            flex: 1;
+        }
+
+        .history-exercise {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .history-time {
+            color: #6b7280;
+            font-size: 0.9em;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .delete-btn {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .edit-btn:hover, .delete-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #6b7280;
+            padding: 40px;
+            font-style: italic;
+        }
+
+        .progress-ring {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 20px;
+        }
+
+        .progress-ring-circle {
+            transition: stroke-dashoffset 1s linear;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .timer {
+                font-size: 3.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧘 Exercise Timer</h1>
+            <p>Track your yoga and meditation practice</p>
+        </div>
+
+        <div class="input-section" id="inputSection">
+            <div class="input-group">
+                <label for="exerciseName">Exercise Name</label>
+                <input type="text" id="exerciseName" placeholder="e.g., Sun Salutation, Meditation">
+            </div>
+            <div class="input-group">
+                <label for="exerciseMinutes">Duration (minutes)</label>
+                <input type="number" id="exerciseMinutes" min="1" placeholder="e.g., 10">
+            </div>
+            <button class="btn" onclick="startTimer()">Start Timer</button>
+        </div>
+
+        <div class="timer-display" id="timerDisplay">
+            <div class="current-exercise" id="currentExercise"></div>
+            
+            <svg class="progress-ring" id="progressRing">
+                <circle
+                    class="progress-ring-circle"
+                    stroke="#e8e3ff"
+                    stroke-width="8"
+                    fill="transparent"
+                    r="90"
+                    cx="100"
+                    cy="100"
+                />
+                <circle
+                    class="progress-ring-circle"
+                    stroke="url(#gradient)"
+                    stroke-width="8"
+                    fill="transparent"
+                    r="90"
+                    cx="100"
+                    cy="100"
+                    id="progressCircle"
+                />
+                <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#611bf8;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+            </svg>
+            
+            <div class="timer" id="timer">00:00</div>
+            
+            <div class="timer-controls">
+                <button class="btn-pause" id="pauseBtn" onclick="togglePause()">Pause</button>
+                <button class="btn-stop" onclick="stopTimer()">Stop</button>
+            </div>
+        </div>
+
+        <div class="history-section">
+            <h2>📋 Exercise History</h2>
+            <div class="history-list" id="historyList">
+                <div class="empty-state">No exercises completed yet. Start your first session!</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let timerInterval = null;
+        let remainingSeconds = 0;
+        let totalSeconds = 0;
+        let isPaused = false;
+        let currentExerciseName = '';
+        let exerciseHistory = [];
+        let timerAudio = null;
+
+        function startTimer() {
+            const exerciseName = document.getElementById('exerciseName').value.trim();
+            const minutes = parseInt(document.getElementById('exerciseMinutes').value);
+
+            if (!exerciseName) {
+                alert('Please enter an exercise name');
+                return;
+            }
+
+            if (!minutes || minutes < 1) {
+                alert('Please enter a valid duration');
+                return;
+            }
+
+            currentExerciseName = exerciseName;
+            totalSeconds = minutes * 60;
+            remainingSeconds = totalSeconds;
+            isPaused = false;
+
+            document.getElementById('currentExercise').textContent = exerciseName;
+            document.getElementById('inputSection').style.display = 'none';
+            document.getElementById('timerDisplay').classList.add('active');
+
+            updateTimerDisplay();
+            updateProgressRing();
+
+            timerInterval = setInterval(() => {
+                if (!isPaused && remainingSeconds > 0) {
+                    remainingSeconds--;
+                    updateTimerDisplay();
+                    updateProgressRing();
+
+                    if (remainingSeconds === 0) {
+                        completeExercise();
+                    }
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(remainingSeconds / 60);
+            const seconds = remainingSeconds % 60;
+            document.getElementById('timer').textContent = 
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function updateProgressRing() {
+            const circle = document.getElementById('progressCircle');
+            const radius = 90;
+            const circumference = 2 * Math.PI * radius;
+            const progress = (totalSeconds - remainingSeconds) / totalSeconds;
+            const offset = circumference * (1 - progress);
+            
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            circle.style.strokeDashoffset = offset;
+        }
+
+        function togglePause() {
+            isPaused = !isPaused;
+            const pauseBtn = document.getElementById('pauseBtn');
+            pauseBtn.textContent = isPaused ? 'Resume' : 'Pause';
+        }
+
+        function stopTimer() {
+            if (confirm('Are you sure you want to stop the timer?')) {
+                clearInterval(timerInterval);
+                const completedMinutes = Math.ceil((totalSeconds - remainingSeconds) / 60);
+                
+                if (completedMinutes > 0) {
+                    addToHistory(currentExerciseName, completedMinutes);
+                }
+                
+                resetTimer();
+            }
+        }
+
+        function completeExercise() {
+            clearInterval(timerInterval);
+            const minutes = Math.floor(totalSeconds / 60);
+            addToHistory(currentExerciseName, minutes);
+            
+            alert(`🎉 Congratulations! You completed ${currentExerciseName}!`);
+            resetTimer();
+        }
+
+        function resetTimer() {
+            document.getElementById('inputSection').style.display = 'block';
+            document.getElementById('timerDisplay').classList.remove('active');
+            document.getElementById('exerciseName').value = '';
+            document.getElementById('exerciseMinutes').value = '';
+            document.getElementById('pauseBtn').textContent = 'Pause';
+            remainingSeconds = 0;
+            totalSeconds = 0;
+            isPaused = false;
+        }
+
+        function addToHistory(name, minutes) {
+            const historyItem = {
+                id: Date.now(),
+                name: name,
+                minutes: minutes,
+                timestamp: new Date().toLocaleString()
+            };
+            
+            exerciseHistory.unshift(historyItem);
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const historyList = document.getElementById('historyList');
+            
+            if (exerciseHistory.length === 0) {
+                historyList.innerHTML = '<div class="empty-state">No exercises completed yet. Start your first session!</div>';
+                return;
+            }
+
+            historyList.innerHTML = exerciseHistory.map(item => `
+                <div class="history-item">
+                    <div class="history-info">
+                        <div class="history-exercise" id="name-${item.id}">${item.name}</div>
+                        <div class="history-time" id="time-${item.id}">${item.minutes} minutes • ${item.timestamp}</div>
+                    </div>
+                    <div class="history-actions">
+                        <button class="edit-btn" onclick="editHistoryItem(${item.id})">Edit</button>
+                        <button class="delete-btn" onclick="deleteHistoryItem(${item.id})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function editHistoryItem(id) {
+            const item = exerciseHistory.find(i => i.id === id);
+            if (!item) return;
+
+            const newName = prompt('Edit exercise name:', item.name);
+            if (newName !== null && newName.trim() !== '') {
+                item.name = newName.trim();
+            }
+
+            const newMinutes = prompt('Edit duration (minutes):', item.minutes);
+            if (newMinutes !== null && !isNaN(newMinutes) && parseInt(newMinutes) > 0) {
+                item.minutes = parseInt(newMinutes);
+            }
+
+            renderHistory();
+        }
+
+        function deleteHistoryItem(id) {
+            if (confirm('Are you sure you want to delete this exercise?')) {
+                exerciseHistory = exerciseHistory.filter(i => i.id !== id);
+                renderHistory();
+            }
+        }
+
+        renderHistory();
+    </script>
+</body>
+</html>

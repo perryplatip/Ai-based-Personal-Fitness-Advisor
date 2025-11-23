@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitAI - Simple Progress Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .progress-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .progress-bar {
+            height: 12px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #e9ecef;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease-in-out;
+            position: relative;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .circular-progress {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+        
+        .circular-progress svg {
+            transform: rotate(-90deg);
+        }
+        
+        .motivation-section {
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            animation: pulse-glow 3s infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(102, 126, 234, 0.6); }
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn-update {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50px;
+            padding: 12px 30px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-update:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .excellent { background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); }
+        .good { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); }
+        .average { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .poor { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        
+        .bounce-in {
+            animation: bounceIn 0.6s ease-out;
+        }
+        
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold text-white mb-3">🏋️ FitAI Dashboard</h1>
+            <p class="lead text-white-50">Track your daily fitness progress</p>
+        </div>
+        
+        <!-- Input Section -->
+        <div class="dashboard-card p-4 mb-4">
+            <h3 class="text-center mb-4 fw-bold">📊 Update Your Stats</h3>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <label class="form-label fw-semibold">Weight (kg)</label>
+                        <input type="number" class="form-control" id="weightInput" placeholder="70" min="30" max="200" step="0.1">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <label class="form-label fw-semibold">Workout Time (min)</label>
+                        <input type="number" class="form-control" id="workoutInput" placeholder="60" min="0" max="480">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <label class="form-label fw-semibold">Calories Burned</label>
+                        <input type="number" class="form-control" id="caloriesInput" placeholder="500" min="0" max="5000">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <label class="form-label fw-semibold">Steps Today</label>
+                        <input type="number" class="form-control" id="stepsInput" placeholder="8000" min="0" max="50000">
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <button class="btn btn-update btn-lg" onclick="updateProgress()">
+                    ⚡ Update Progress
+                </button>
+            </div>
+        </div>
+        
+        <!-- Motivation Section -->
+        <div id="motivationSection" class="motivation-section dashboard-card text-center text-white">
+            <h2 id="motivationTitle" class="fw-bold mb-3">🎯 Ready to Start Your Journey?</h2>
+            <p id="motivationText" class="lead mb-0">Enter your daily stats above to see your amazing progress!</p>
+        </div>
+        
+        <!-- Progress Cards -->
+        <div class="row g-4 mb-5">
+            <!-- Weight Progress -->
+            <div class="col-md-3">
+                <div class="progress-card p-4 text-center h-100">
+                    <div class="stat-icon">⚖️</div>
+                    <h4 class="fw-bold mb-3">Weight</h4>
+                    <h2 id="weightDisplay" class="text-primary fw-bold mb-3">-- kg</h2>
+                    <div class="progress-bar mb-2">
+                        <div id="weightProgress" class="progress-fill" style="width: 0%; background: linear-gradient(90deg, #22c55e, #4ade80);"></div>
+                    </div>
+                    <small id="weightStatus" class="text-muted">No data yet</small>
+                </div>
+            </div>
+            
+            <!-- Workout Time Progress -->
+            <div class="col-md-3">
+                <div class="progress-card p-4 text-center h-100">
+                    <div class="stat-icon">⏱️</div>
+                    <h4 class="fw-bold mb-3">Workout</h4>
+                    <h2 id="workoutDisplay" class="text-info fw-bold mb-3">0 min</h2>
+                    <div class="progress-bar mb-2">
+                        <div id="workoutProgress" class="progress-fill" style="width: 0%; background: linear-gradient(90deg, #3b82f6, #60a5fa);"></div>
+                    </div>
+                    <small id="workoutStatus" class="text-muted">Goal: 60 min</small>
+                </div>
+            </div>
+            
+            <!-- Calories Progress -->
+            <div class="col-md-3">
+                <div class="progress-card p-4 text-center h-100">
+                    <div class="stat-icon">🔥</div>
+                    <h4 class="fw-bold mb-3">Calories</h4>
+                    <h2 id="caloriesDisplay" class="text-warning fw-bold mb-3">0</h2>
+                    <div class="progress-bar mb-2">
+                        <div id="caloriesProgress" class="progress-fill" style="width: 0%; background: linear-gradient(90deg, #f59e0b, #fbbf24);"></div>
+                    </div>
+                    <small id="caloriesStatus" class="text-muted">Goal: 500 cal</small>
+                </div>
+            </div>
+            
+            <!-- Steps Progress -->
+            <div class="col-md-3">
+                <div class="progress-card p-4 text-center h-100">
+                    <div class="stat-icon">👟</div>
+                    <h4 class="fw-bold mb-3">Steps</h4>
+                    <h2 id="stepsDisplay" class="text-success fw-bold mb-3">0</h2>
+                    <div class="progress-bar mb-2">
+                        <div id="stepsProgress" class="progress-fill" style="width: 0%; background: linear-gradient(90deg, #8b5cf6, #a78bfa);"></div>
+                    </div>
+                    <small id="stepsStatus" class="text-muted">Goal: 10,000 steps</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Overall Progress Circle -->
+        <div class="dashboard-card p-4 text-center">
+            <h3 class="fw-bold mb-4">🎯 Overall Daily Progress</h3>
+            <div class="circular-progress mx-auto mb-3">
+                <svg width="120" height="120">
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#e9ecef" stroke-width="10"/>
+                    <circle id="overallProgress" cx="60" cy="60" r="50" fill="none" stroke="url(#progressGradient)" 
+                            stroke-width="10" stroke-dasharray="314" stroke-dashoffset="314" 
+                            style="transition: stroke-dashoffset 1s ease-in-out"/>
+                    <defs>
+                        <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#667eea"/>
+                            <stop offset="100%" style="stop-color:#764ba2"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                    <h2 id="overallPercentage" class="fw-bold" style="color: #667eea;">0%</h2>
+                    <small class="text-muted">Complete</small>
+                </div>
+            </div>
+            <p id="overallMessage" class="lead">Start logging to see your progress!</p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Goals
+        const GOALS = {
+            workout: 60, // minutes
+            calories: 500,
+            steps: 10000,
+            weight: 70 // target weight
+        };
+
+        let currentData = {
+            weight: 0,
+            workout: 0,
+            calories: 0,
+            steps: 0
+        };
+
+        function updateProgress() {
+            // Get input values
+            const weight = parseFloat(document.getElementById('weightInput').value) || 0;
+            const workout = parseInt(document.getElementById('workoutInput').value) || 0;
+            const calories = parseInt(document.getElementById('caloriesInput').value) || 0;
+            const steps = parseInt(document.getElementById('stepsInput').value) || 0;
+
+            // Update current data
+            currentData = { weight, workout, calories, steps };
+
+            // Update displays with animation
+            updateWeightProgress(weight);
+            updateWorkoutProgress(workout);
+            updateCaloriesProgress(calories);
+            updateStepsProgress(steps);
+            updateOverallProgress();
+            updateMotivationSection();
+
+            // Add bounce animation to cards
+            document.querySelectorAll('.progress-card').forEach(card => {
+                card.classList.add('bounce-in');
+                setTimeout(() => card.classList.remove('bounce-in'), 600);
+            });
+        }
+
+        function updateWeightProgress(weight) {
+            document.getElementById('weightDisplay').textContent = weight > 0 ? `${weight} kg` : '-- kg';
+            
+            if (weight > 0) {
+                // Calculate progress based on proximity to goal (closer = higher progress)
+                const diff = Math.abs(weight - GOALS.weight);
+                const maxDiff = 20; // max difference for 0% progress
+                const progress = Math.max(0, Math.min(100, (maxDiff - diff) / maxDiff * 100));
+                
+                document.getElementById('weightProgress').style.width = progress + '%';
+                document.getElementById('weightStatus').textContent = 
+                    progress > 80 ? 'Great! Close to goal' :
+                    progress > 60 ? 'Good progress' :
+                    progress > 40 ? 'Getting there' : 'Keep working!';
+            }
+        }
+
+        function updateWorkoutProgress(workout) {
+            document.getElementById('workoutDisplay').textContent = `${workout} min`;
+            
+            const progress = Math.min(100, (workout / GOALS.workout) * 100);
+            document.getElementById('workoutProgress').style.width = progress + '%';
+            document.getElementById('workoutStatus').textContent = 
+                progress >= 100 ? '🎉 Goal achieved!' :
+                progress >= 75 ? '💪 Almost there!' :
+                progress >= 50 ? '👍 Good progress' :
+                progress > 0 ? '⏰ Keep going!' : 'Goal: 60 min';
+        }
+
+        function updateCaloriesProgress(calories) {
+            document.getElementById('caloriesDisplay').textContent = calories.toLocaleString();
+            
+            const progress = Math.min(100, (calories / GOALS.calories) * 100);
+            document.getElementById('caloriesProgress').style.width = progress + '%';
+            document.getElementById('caloriesStatus').textContent = 
+                progress >= 100 ? '🔥 Crushing it!' :
+                progress >= 75 ? '🚀 On fire!' :
+                progress >= 50 ? '💯 Halfway there' :
+                progress > 0 ? '🔥 Keep burning!' : 'Goal: 500 cal';
+        }
+
+        function updateStepsProgress(steps) {
+            document.getElementById('stepsDisplay').textContent = steps.toLocaleString();
+            
+            const progress = Math.min(100, (steps / GOALS.steps) * 100);
+            document.getElementById('stepsProgress').style.width = progress + '%';
+            document.getElementById('stepsStatus').textContent = 
+                progress >= 100 ? '🏆 10K+ achieved!' :
+                progress >= 75 ? '🚶‍♂️ Almost 10K!' :
+                progress >= 50 ? '👟 Halfway to 10K' :
+                progress > 0 ? '🚀 Keep stepping!' : 'Goal: 10,000 steps';
+        }
+
+        function updateOverallProgress() {
+            // Calculate overall progress as average of all goals
+            let totalProgress = 0;
+            let goalCount = 0;
+
+            // Workout progress
+            if (currentData.workout > 0) {
+                totalProgress += Math.min(100, (currentData.workout / GOALS.workout) * 100);
+                goalCount++;
+            }
+
+            // Calories progress
+            if (currentData.calories > 0) {
+                totalProgress += Math.min(100, (currentData.calories / GOALS.calories) * 100);
+                goalCount++;
+            }
+
+            // Steps progress
+            if (currentData.steps > 0) {
+                totalProgress += Math.min(100, (currentData.steps / GOALS.steps) * 100);
+                goalCount++;
+            }
+
+            // Weight progress
+            if (currentData.weight > 0) {
+                const diff = Math.abs(currentData.weight - GOALS.weight);
+                const maxDiff = 20;
+                const weightProgress = Math.max(0, Math.min(100, (maxDiff - diff) / maxDiff * 100));
+                totalProgress += weightProgress;
+                goalCount++;
+            }
+
+            const overallProgress = goalCount > 0 ? totalProgress / goalCount : 0;
+            
+            // Update circular progress
+            const circumference = 314;
+            const offset = circumference - (circumference * overallProgress / 100);
+            document.getElementById('overallProgress').style.strokeDashoffset = offset;
+            document.getElementById('overallPercentage').textContent = Math.round(overallProgress) + '%';
+            
+            // Update overall message
+            const messages = [
+                "🌟 Outstanding! You're crushing all your goals!",
+                "💪 Excellent work! Keep up the momentum!",
+                "👍 Good progress! You're on the right track!",
+                "⚡ Nice start! Let's push a bit harder!",
+                "🎯 Ready to begin? Enter your stats above!"
+            ];
+            
+            const messageIndex = 
+                overallProgress >= 90 ? 0 :
+                overallProgress >= 70 ? 1 :
+                overallProgress >= 50 ? 2 :
+                overallProgress > 0 ? 3 : 4;
+                
+            document.getElementById('overallMessage').textContent = messages[messageIndex];
+        }
+
+        function updateMotivationSection() {
+            const section = document.getElementById('motivationSection');
+            const title = document.getElementById('motivationTitle');
+            const text = document.getElementById('motivationText');
+
+            // Calculate overall score
+            let score = 0;
+            if (currentData.workout >= GOALS.workout) score += 25;
+            if (currentData.calories >= GOALS.calories) score += 25;
+            if (currentData.steps >= GOALS.steps) score += 25;
+            if (currentData.weight > 0 && Math.abs(currentData.weight - GOALS.weight) <= 5) score += 25;
+
+            // Update motivation based on score
+            section.className = 'motivation-section dashboard-card text-center text-white ';
+            
+            if (score >= 75) {
+                section.classList.add('excellent');
+                title.textContent = '🏆 EXCELLENT! You\'re absolutely crushing it!';
+                text.textContent = 'You\'ve achieved most of your goals today. You\'re a fitness superstar! 🌟';
+            } else if (score >= 50) {
+                section.classList.add('good');
+                title.textContent = '💪 GREAT JOB! You\'re doing really well!';
+                text.textContent = 'You\'ve hit several goals today. Keep up this fantastic momentum! 🚀';
+            } else if (score >= 25) {
+                section.classList.add('average');
+                title.textContent = '⚡ GOOD START! You can do even better!';
+                text.textContent = 'You\'ve made some progress today. Let\'s push a little harder to reach all goals! 💯';
+            } else if (score > 0) {
+                section.classList.add('poor');
+                title.textContent = '🎯 TIME TO STEP UP! Let\'s get moving!';
+                text.textContent = 'You\'ve started, but there\'s room for improvement. You\'ve got this! 💪';
+            } else {
+                section.classList.add('average');
+                title.textContent = '🎯 Ready to Start Your Journey?';
+                text.textContent = 'Enter your daily stats above to see your amazing progress! 🚀';
+            }
+        }
+
+        // Initialize with sample data (optional)
+        document.addEventListener('DOMContentLoaded', function() {
+            // You can uncomment these lines to start with sample data
+            // document.getElementById('weightInput').value = '72';
+            // document.getElementById('workoutInput').value = '45';
+            // document.getElementById('caloriesInput').value = '380';
+            // document.getElementById('stepsInput').value = '7500';
+            // updateProgress();
+        });
+    </script>
+</body>
+</html>
